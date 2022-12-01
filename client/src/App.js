@@ -1,9 +1,14 @@
 import './App.css';
 import { React } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { AuthContextProvider } from './auth';
+import { GlobalStoreContextProvider } from './store'
 import {
-    WelcomeScreen,
-    WelcomeScreenBanner
+    WelcomeScreenBanner,
+    LoginScreen,
+    RegisterScreen,
+    HomeWrapper,
+    TopBar
 } from './components'
 /*
     This is our application's top-level component.
@@ -19,10 +24,17 @@ import {
 const App = () => {   
     return (
         <BrowserRouter>
-                <WelcomeScreenBanner />              
+            <AuthContextProvider>
+                <GlobalStoreContextProvider>  
+                <WelcomeScreenBanner />   
+                    <TopBar />
                     <Switch>
-                        <Route path="/" exact component={WelcomeScreen} />
+                        <Route path="/" exact component={HomeWrapper} />
+                        <Route path="/login/" exact component={LoginScreen} />
+                        <Route path="/register/" exact component={RegisterScreen} />
                     </Switch>
+                    </GlobalStoreContextProvider>
+            </AuthContextProvider>
         </BrowserRouter>
     )
 }
