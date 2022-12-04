@@ -32,7 +32,8 @@ export const GlobalStoreActionType = {
     REMOVE_SONG: "REMOVE_SONG",
     HIDE_MODALS: "HIDE_MODALS",
     LOGIN_ERROR: "LOGIN_ERROR",
-    REGISTER_ERROR: "REGISTER_ERROR"
+    REGISTER_ERROR: "REGISTER_ERROR",
+    INCREMENT_SONG: "INCREMENT_SONG"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -62,6 +63,7 @@ function GlobalStoreContextProvider(props) {
         listIdMarkedForDeletion: null,
         listMarkedForDeletion: null,
         loginOk: null,
+        currentIndexPlaying: 0
     });
     const history = useHistory();
 
@@ -75,6 +77,7 @@ function GlobalStoreContextProvider(props) {
     // HANDLE EVERY TYPE OF STATE CHANGE
     const storeReducer = (action) => {
         const { type, payload } = action;
+        console.log("TYPE IS ", type)
         switch (type) {
             // LIST UPDATE OF ITS NAME
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
@@ -89,7 +92,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -105,7 +109,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 })
             }
             // CREATE A NEW LIST
@@ -121,7 +126,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -137,7 +143,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -153,7 +160,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: payload.id,
                     listMarkedForDeletion: payload.playlist,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             // UPDATE A LIST
@@ -169,7 +177,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             // START EDITING A LIST NAME
@@ -185,7 +194,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             // 
@@ -199,9 +209,10 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: payload.currentSong,
+                    listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             case GlobalStoreActionType.REMOVE_SONG: {
@@ -216,7 +227,8 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: payload.currentSong,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             case GlobalStoreActionType.HIDE_MODALS: {
@@ -231,21 +243,34 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null,
                     loginOk: null,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             case GlobalStoreActionType.LOGIN_ERROR: {
                 return setStore({
                     currentModal : CurrentModal.LOGIN_ERROR,
                     loginOk: payload,
-                    registerOk: null
+                    registerOk: null,
+                    currentIndexPlaying: store.currentIndexPlaying,
                 });
             }
             case GlobalStoreActionType.REGISTER_ERROR: {
                 return setStore({
                     currentModal: CurrentModal.REGISTER_ERROR,
                     loginOk: null,
-                    registerOk: payload
+                    registerOk: payload,
+                    currentIndexPlaying: store.currentIndexPlaying,
+                });
+            }
+            case GlobalStoreActionType.INCREMENT_SONG:{
+                return setStore({
+                    currentModal: null,
+                    idNamePairs: store.idNamePairs,
+                    loginOk: null,
+                    registerOk: null,
+                    listMarkedForDeletion: null,
+                    currentIndexPlaying: payload,
                 });
             }
             default:
@@ -322,6 +347,46 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    store.incrementCurrentSongIndex = function (){
+        console.log("SKIPPING SONG")
+        if(store.currentList){
+            let val = store.currentIndexPlaying + 1
+            val = val % store.currentList.songs.length;
+            console.log("AFTER", val)
+            storeReducer({
+                type: GlobalStoreActionType.INCREMENT_SONG,
+                payload: val
+            }
+        );
+        }
+    }
+    store.decrementCurrentSongIndex = function (){
+        
+        let val = store.currentIndexPlaying - 1
+        if(val < 0){
+            val = store.currentList.songs.length -1
+        }
+        storeReducer({
+            type: GlobalStoreActionType.INCREMENT_SONG,
+            payload: val
+        }
+        );
+    }
+    store.noMoreSong = function (){
+        storeReducer({
+            type: GlobalStoreActionType.INCREMENT_SONG,
+            payload: -1
+        }
+        );
+    }
+    store.moreSong = function (){
+        storeReducer({
+            type: GlobalStoreActionType.INCREMENT_SONG,
+            payload: 0
+        }
+        );
+        
+    }
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
@@ -451,7 +516,7 @@ function GlobalStoreContextProvider(props) {
                         type: GlobalStoreActionType.SET_CURRENT_LIST,
                         payload: playlist
                     });
-                    history.push("/playlist/" + playlist._id);
+                   // history.push("/playlist/" + playlist._id);
                 }
             }
         }

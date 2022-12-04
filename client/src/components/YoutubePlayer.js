@@ -1,76 +1,179 @@
-import React from "react";
-import YouTube from "react-youtube";
-import Modal from "react-modal";
+import React from 'react';
+import { useContext, useState } from 'react'
+import YouTube from 'react-youtube';
+import { GlobalStoreContext } from '../store'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
+import StopIcon from '@mui/icons-material/Stop';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import { Typography } from "@mui/material";
 
-const modalStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)"
-  }
-};
+export default function YoutubePlayer() {
+    // THIS EXAMPLE DEMONSTRATES HOW TO DYNAMICALLY MAKE A
+    // YOUTUBE PLAYER AND EMBED IT IN YOUR SITE. IT ALSO
+    // DEMONSTRATES HOW TO IMPLEMENT A PLAYLIST THAT MOVES
+    // FROM ONE SONG TO THE NEXT
+    const { store } = useContext(GlobalStoreContext);
+    const [playing, setPlaying] = React.useState(false);
+    const [player, setPlayer] = React.useState(false);
+    const [renders, setRenders] = React.useState(0);
 
-// Render function for Prismic headless CMS pages
-function YoutubePlayer() {
-  const [modalIsOpen, setModalIsOpen] = React.useState(false);
-  const [videoUrl, setVideoUrl] = React.useState("");
-  let videoCode;
-  if (videoUrl) {
-    videoCode = videoUrl.split("v=")[1].split("&")[0];
-  }
+    
 
-  const checkElapsedTime = (e) => {
-    console.log(e.target.playerInfo.playerState);
-    const duration = e.target.getDuration();
-    const currentTime = e.target.getCurrentTime();
-    if (currentTime / duration > 0.95) {
-      setModalIsOpen(true);
+    let currentPlaylist = null
+    let currentSongIndex = 0
+    let videoCode = ""
+    if (store.currentList){
+      currentPlaylist = store.currentList.songs
+      videoCode = currentPlaylist[currentSongIndex].youTubeId
     }
-  };
+    // THIS HAS THE YOUTUBE IDS FOR THE SONGS IN OUR PLAYLIST
 
-  const opts = {
-    playerVars: {
-      // https://developers.google.com/youtube/player_parameters
-      autoplay: 1
+
+    // THIS IS THE INDEX OF THE SONG CURRENTLY IN USE IN THE PLAYLIST
+
+    const playerOptions = {
+        height: '390',
+        width: '600',
+        playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 0,
+        },
+    };
+
+    // THIS FUNCTION LOADS THE CURRENT SONG INTO
+    // THE PLAYER AND PLAYS IT
+    function loadAndPlayCurrentSong(player) {
+        // setRenders(Math.random())
+        if(currentPlaylist){
+            let song = currentPlaylist[currentSongIndex].youTubeId;
+            player.loadVideoById(song);
+            player.playVideo();
+        }
+        setRenders({currentSongIndex})
     }
-  };
 
-  const handleExerciseComplete = () => console.log("Do something");
+    // THIS FUNCTION INCREMENTS THE PLAYLIST SONG TO THE NEXT ONE
+    function incSong() {
+        currentSongIndex++;
+        currentSongIndex = currentSongIndex % currentPlaylist.length;
+        loadAndPlayCurrentSong(player)
+    }
 
-  return (
-    <div>
-      <div>
-        <h1>Video</h1>
-        <div></div>
-      </div>
-      <div>
-        <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
+    function onPlayerReady(event) {
+        loadAndPlayCurrentSong(event.target);
+        event.target.playVideo();
+        setPlayer(event.target)
+    }
+    const handleBack = (e) => {
+        currentSongIndex--;
+        if(currentSongIndex < 0){
+            currentSongIndex = currentPlaylist.length
+        }
+
+        loadAndPlayCurrentSong(player)
+    }
+    const handlePlay = (e) => {
+        console.log("set to true")
+        setPlaying(true)
+        player.playVideo()
+    }
+    const handleStop = (e) => {
+      player.stopVideo()
+  
+    }
+    // THIS IS OUR EVENT HANDLER FOR WHEN THE YOUTUBE PLAYER'S STATE
+    // CHANGES. NOTE THAT playerStatus WILL HAVE A DIFFERENT INTEGER
+    // VALUE TO REPRESENT THE TYPE OF STATE CHANGE. A playerStatus
+    // VALUE OF 0 MEANS THE SONG PLAYING HAS ENDED.
+    function onPlayerStateChange(event) {
+        let playerStatus = event.data;
+        let player = event.target;
+        if (playerStatus === -1) {
+            // VIDEO UNSTARTED
+            console.log("-1 Video unstarted");
+        } else if (playerStatus === 0) {
+            // THE VIDEO HAS COMPLETED PLAYING
+            console.log("0 Video ended");
+            incSong();
+            loadAndPlayCurrentSong(player);
+        } else if (playerStatus === 1) {
+            // THE VIDEO IS PLAYED
+            console.log("1 Video played");
+        } else if (playerStatus === 2) {
+            // THE VIDEO IS PAUSED
+            console.log("2 Video paused");
+        } else if (playerStatus === 3) {
+            // THE VIDEO IS BUFFERING
+            console.log("3 Video buffering");
+        } else if (playerStatus === 5) {
+            // THE VIDEO HAS BEEN CUED
+            console.log("5 Video cued");
+            loadAndPlayCurrentSong(event.target)
+        }
+    }
+    let val = 2
+    if(playing){
+        val = 1
+    }
+    let playListName = ""
+    let currentSSong = ""
+    let currentArtist = ""
+
+    if(store.currentList){
+        playListName = store.currentList.name
+        console.log(playListName)
+        currentSSong = store.currentList.songs[currentSongIndex].title
+        console.log(currentSSong)
+        currentArtist = store.currentList.songs[currentSongIndex].artist
+
+    }
+    
+    return(
         <div>
-          <YouTube
+        <div>
+            <h1></h1>
+            <div></div>
+        </div>
+        <div>
+            <div>
+            <YouTube
             videoId={videoCode}
-            containerClassName="embed embed-youtube"
-            onStateChange={(e) => checkElapsedTime(e)}
-            opts={opts}
-          />
+            opts={playerOptions}
+            onReady={onPlayerReady}
+            onStateChange={onPlayerStateChange}
+            />
+            </div>
         </div>
-      </div>
+        <Box sx = {{backgroundColor: 'lightblue', width : "100%"}}>
+            
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Playlist: {playListName}
+            </Typography>
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Song: {currentSSong}
+            </Typography>
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Artist: {currentArtist}
+            </Typography>
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        contentLabel="Exercise Completed"
-        style={modalStyles}
-      >
-        <div>
-          <h3>Completed the exercise?</h3>
-          <button onClick={handleExerciseComplete}>Complete exercise</button>
+            <Box sx={{backgroundColor: "white", width : "45%", position:"relative", left:"28%"}}>
+                <IconButton>
+                    <FastRewindIcon onClick = {handleBack} sx = {{fontSize: "48px"}}/>
+                </IconButton>
+                <IconButton>
+                    <StopIcon onClick = {handleStop} sx = {{fontSize: "48px"}}/>
+                </IconButton>
+                <IconButton>
+                    <PlayArrowIcon onClick = {handlePlay} sx = {{fontSize: "48px"}}/>
+                </IconButton>
+                <IconButton>
+                    <FastForwardIcon onClick = {incSong} sx = {{fontSize: "48px"}}/>
+                </IconButton>
+            </Box>
+        </Box>
         </div>
-      </Modal>
-    </div>
-  );
+    );
 }
-
-export default YoutubePlayer;

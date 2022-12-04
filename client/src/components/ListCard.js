@@ -2,11 +2,10 @@ import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
-import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
 import { Typography } from '@mui/material';
 
 import * as React from "react";
@@ -18,9 +17,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
+import AddIcon from "@mui/icons-material/Add";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import SongCard from './SongCard';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -37,20 +37,29 @@ function ListCard(props) {
 
     const [open, setOpen] = React.useState(false);
 
-    const handleClick = (event) => {
-      switch(event.detail) {
-        case 2:{
-          console.log("EDIT")
-          break;
+    const handleCloseClick = (event) => {
+      setOpen(!open);
+      store.noMoreSong()
+    }
+    const handleAddSong = (event) => {
+        store.addNewSong()
+    }
+    const handleClick = (event,id) => {
+        setOpen(!open);
+        store.moreSong()
+        console.log("handleLoadList for " + id);
+        if (!event.target.disabled) {
+            let _id = event.target.id;
+            if (_id.indexOf('list-card-text-') >= 0)
+                _id = ("" + _id).substring("list-card-text-".length);
+
+            console.log("load " + event.target.id);
+
+            // CHANGE THE CURRENT LIST
+            store.setCurrentList(id);
         }
-        case 1: {
-          setOpen(!open);
-          break;
-        }
-      }
     };
     const handleDbl = (event) => {
-        console.log("edit")
         setEditActive(!editActive)
     }
     const handleLike = () => {
@@ -59,7 +68,12 @@ function ListCard(props) {
     const handleDislike = () => {
       console.log("handleDislike")
     }
-        
+    const handleUndo = () => {
+        store.undo()
+    }
+    const handleRedo = () => {
+        store.redo()
+    }
     function handleLoadList(event, id) {
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
@@ -113,35 +127,51 @@ function ListCard(props) {
     if (store.isListNameEditActive) {
         cardStatus = true;
     }
-    let cardElement =
-        <ListItem
-            id={idNamePair._id}
-            key={idNamePair._id}
-            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '48pt' }}
-            button
-            onClick={(event) => {
-                handleLoadList(event, idNamePair._id)
-            }}
-        >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton disabled = {store.FoolProof()} onClick={handleToggleEdit} aria-label='edit'>
-                    <EditIcon style={{fontSize:'48pt'}} />
+    let songCard = null
+    if(store.currentList){
+      songCard = <Box sx = {{marginRight:"10%", marginLeft:"10%"}}>
+        <List 
+      id="playlist-cards" 
+      sx={{ width: '100%', bgcolor: 'navy' }}
+  >
+      {
+          store.currentList.songs.map((song, index) => (
+              <SongCard
+                  id={'playlist-song-' + (index)}
+                  key={'playlist-song-' + (index)}
+                  index={index}
+                  song={song}
+              />
+          ))  
+      }
+      <div>
+            <b
+                style= {{color :'yellow'}}
+                className="song-link">
+                Add Song
+            </b>
+
+                <IconButton display="flex"
+                justifyContent="flex-end"
+                alignItems="flex-end">
+                    <AddIcon type="button"
+                    onClick={handleAddSong}
+                    sx = {{marginRight:"10%", color: "white"}}></AddIcon>
                 </IconButton>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton disabled = {store.FoolProof()} onClick={(event) => {
-                        handleDeleteList(event, idNamePair._id)
-                    }} aria-label='delete'>
-                    <DeleteIcon style={{fontSize:'48pt'}} />
-                </IconButton>
-            </Box>
-        </ListItem>
-    let test = <List
-    sx={{ width: "100%", bgcolor: "background.paper", display: "flex" }}
-    component="nav"
-    aria-labelledby="nested-list-subheader"
+
+        </div>
+   </List> </Box>  
+    }
+    let color = "background.paper"
+    if(open){
+        color = "#d69a29"
+    }
+    let test = 
+    <List
+      sx={{ width: "100%", bgcolor: color}}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+      
   >
     <ListItemButton onDoubleClick={handleDbl}>
       <ListItemText primary={idNamePair.name} secondary = "By Jesse" />
@@ -154,18 +184,32 @@ function ListCard(props) {
       <Typography>
         &nbsp;&nbsp; 3  &nbsp;&nbsp;
       </Typography>
-      {open ? <ExpandLess onClick = {handleClick} /> : <ExpandMore onClick = {handleClick}/>}
+      {open ? <ExpandLess onClick = {handleCloseClick} /> : <ExpandMore onClick={(event) => {
+                handleClick(event, idNamePair._id)
+            }}/>}
     </ListItemButton>
     
     <Collapse in={open} timeout="auto" unmountOnExit>
       <List component="div" disablePadding>
-        <Typography>
-          Hi
-        </Typography>
-        <Typography>
-          ok
-        </Typography>
+        <Box>
+          {songCard}           
+         </Box>
       </List>
+      <Button variant = "contained" onClick = {handleUndo} sx = {{color: "black", background: "lightgray"}}>
+        Undo
+      </Button>
+      <Button variant = "contained"  onClick = {handleRedo} sx = {{color: "black", background: "lightgray"}}>
+        Redo
+      </Button>
+      <Button variant = "contained" sx = {{color: "black", background: "lightgray"}}>
+        Publish
+      </Button>
+      <Button variant = "contained" sx = {{color: "black", background: "lightgray", float: "right"}}>
+          Delete
+      </Button>
+      <Button variant = "contained" sx = {{color: "black", background: "lightgray", float: "right"}}>
+        Duplicate
+      </Button>
     </Collapse>
   </List>
                     

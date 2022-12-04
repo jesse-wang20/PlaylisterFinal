@@ -7,8 +7,8 @@ import HomeWrapper from './HomeWrapper'
 import HomeScreen from './HomeScreen'
 import ListCard from './ListCard'
 import MUIDeleteModal from './MUIDeleteModal'
+import MUIEditSongModal from './MUIEditSongModal'
 import TopBar from './TopBar'
-import WorkspaceScreen from './WorkspaceScreen'
 import YoutubePlayer from './YoutubePlayer'
 /*
     This serves as a module so that we can import
@@ -27,4 +27,5 @@ export {
     MUIDeleteModal,
     YoutubePlayer,
     TopBar,
-    WorkspaceScreen}
+    MUIEditSongModal,
+    }

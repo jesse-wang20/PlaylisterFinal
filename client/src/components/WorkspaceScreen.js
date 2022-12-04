@@ -13,6 +13,15 @@ import { GlobalStoreContext } from '../store/index.js'
     @author McKilla Gorilla
 */
 function WorkspaceScreen() {
+    const { store } = useContext(GlobalStoreContext);
+    let modalJSX = <MUIEditSongModal />;
+    if (store.isEditSongModalOpen()) {
+        console.log("EDIT OPEN")
+        modalJSX = <MUIEditSongModal />;
+    }
+    else if (store.isRemoveSongModalOpen()) {
+        modalJSX = <MUIRemoveSongModal />;
+    }
     return (
         <Box>
         <List 

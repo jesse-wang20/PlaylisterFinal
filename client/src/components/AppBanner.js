@@ -15,7 +15,6 @@ import Typography from '@mui/material/Typography';
 export default function AppBanner() {
     const handleLogin = (event) =>
      {
-        console.log("Bruh")
 
     };
     const welcome = <Box sx={{ flexGrow: 1 }}>
