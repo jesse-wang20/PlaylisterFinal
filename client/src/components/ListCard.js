@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect} from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -33,20 +33,29 @@ function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
+    // const [likes, setLikes] = useState(0)
     const { idNamePair, selected } = props;
 
     const [open, setOpen] = React.useState(false);
-
+    console.log(idNamePair)
+    let likes = idNamePair.likes
+    let Dislikes = idNamePair.dislikes
+    let views = idNamePair.views
+    let date = idNamePair.publishedDate.substring(0,10)
+    console.log("HERE", likes)
     const handleCloseClick = (event) => {
       setOpen(!open);
-      store.noMoreSong()
     }
     const handleAddSong = (event) => {
         store.addNewSong()
     }
+    const handleDuplicate = (event,id) => {
+        console.log("HIT DUPLICATE")
+        store.handleDuplicate(id)
+    }
     const handleClick = (event,id) => {
         setOpen(!open);
-        store.moreSong()
+        store.handleView(idNamePair._id)
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
             let _id = event.target.id;
@@ -62,35 +71,17 @@ function ListCard(props) {
     const handleDbl = (event) => {
         setEditActive(!editActive)
     }
-    const handleLike = () => {
-      console.log("like")
+    const handleLike = (event) => {
+        store.handleLike(idNamePair._id)
     }
     const handleDislike = () => {
-      console.log("handleDislike")
+        store.handleDislike(idNamePair._id)
     }
     const handleUndo = () => {
         store.undo()
     }
     const handleRedo = () => {
         store.redo()
-    }
-    function handleLoadList(event, id) {
-        console.log("handleLoadList for " + id);
-        if (!event.target.disabled) {
-            let _id = event.target.id;
-            if (_id.indexOf('list-card-text-') >= 0)
-                _id = ("" + _id).substring("list-card-text-".length);
-
-            console.log("load " + event.target.id);
-
-            // CHANGE THE CURRENT LIST
-            store.setCurrentList(id);
-        }
-    }
-
-    function handleToggleEdit(event) {
-        event.stopPropagation();
-        toggleEdit();
     }
 
     function toggleEdit() {
@@ -102,9 +93,10 @@ function ListCard(props) {
     }
 
     async function handleDeleteList(event, id) {
-        event.stopPropagation();
         let _id = event.target.id;
+        console.log("IDA", id)
         _id = ("" + _id).substring("delete-list-".length);
+        console.log(id)
         store.markListForDeletion(id);
     }
 
@@ -152,8 +144,7 @@ function ListCard(props) {
             </b>
 
                 <IconButton display="flex"
-                justifyContent="flex-end"
-                alignItems="flex-end">
+                >
                     <AddIcon type="button"
                     onClick={handleAddSong}
                     sx = {{marginRight:"10%", color: "white"}}></AddIcon>
@@ -166,23 +157,29 @@ function ListCard(props) {
     if(open){
         color = "#d69a29"
     }
-    let test = 
+    console.log("LIKES IS", likes)
+    let test = ""
+    test = 
     <List
+      id={idNamePair._id}
       sx={{ width: "100%", bgcolor: color}}
       component="nav"
       aria-labelledby="nested-list-subheader"
       
   >
     <ListItemButton onDoubleClick={handleDbl}>
-      <ListItemText primary={idNamePair.name} secondary = "By Jesse" />
-      
+      <ListItemText primary={idNamePair.name} secondary = "By Jesse"  />
+       <Typography>
+         Published: {date} &nbsp;&nbsp; views: {views}  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       </Typography>
+
       <ThumbUpIcon onClick = {handleLike}/> 
       <Typography>
-       &nbsp;&nbsp; 3  &nbsp;&nbsp;
+       &nbsp;&nbsp; {likes}  &nbsp;&nbsp;
       </Typography>
       <ThumbDownIcon onClick = {handleDislike}/>
       <Typography>
-        &nbsp;&nbsp; 3  &nbsp;&nbsp;
+        &nbsp;&nbsp; {Dislikes} &nbsp;&nbsp;
       </Typography>
       {open ? <ExpandLess onClick = {handleCloseClick} /> : <ExpandMore onClick={(event) => {
                 handleClick(event, idNamePair._id)
@@ -204,15 +201,18 @@ function ListCard(props) {
       <Button variant = "contained" sx = {{color: "black", background: "lightgray"}}>
         Publish
       </Button>
-      <Button variant = "contained" sx = {{color: "black", background: "lightgray", float: "right"}}>
+      <Button id={idNamePair._id} variant = "contained" onClick={(event) => {
+                        handleDeleteList(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
           Delete
       </Button>
-      <Button variant = "contained" sx = {{color: "black", background: "lightgray", float: "right"}}>
+      <Button variant = "contained" onClick={(event) => {
+                        handleDuplicate(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
         Duplicate
       </Button>
     </Collapse>
   </List>
-                    
+    
+
     if (editActive) {
         test =
             <TextField

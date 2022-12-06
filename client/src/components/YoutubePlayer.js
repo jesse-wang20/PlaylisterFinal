@@ -18,16 +18,17 @@ export default function YoutubePlayer() {
     const { store } = useContext(GlobalStoreContext);
     const [playing, setPlaying] = React.useState(false);
     const [player, setPlayer] = React.useState(false);
-    const [renders, setRenders] = React.useState(0);
+    const [currentSongIndex, setcurrentSongIndex] = React.useState(0);
 
     
 
     let currentPlaylist = null
-    let currentSongIndex = 0
     let videoCode = ""
     if (store.currentList){
       currentPlaylist = store.currentList.songs
-      videoCode = currentPlaylist[currentSongIndex].youTubeId
+      if(currentPlaylist[currentSongIndex]){
+        videoCode = currentPlaylist[currentSongIndex].youTubeId
+      }
     }
     // THIS HAS THE YOUTUBE IDS FOR THE SONGS IN OUR PLAYLIST
 
@@ -48,17 +49,25 @@ export default function YoutubePlayer() {
     function loadAndPlayCurrentSong(player) {
         // setRenders(Math.random())
         if(currentPlaylist){
-            let song = currentPlaylist[currentSongIndex].youTubeId;
+            let song = ""
+            if(currentPlaylist[currentSongIndex]){
+                song = currentPlaylist[currentSongIndex].youTubeId
+              }
             player.loadVideoById(song);
             player.playVideo();
         }
-        setRenders({currentSongIndex})
     }
 
     // THIS FUNCTION INCREMENTS THE PLAYLIST SONG TO THE NEXT ONE
     function incSong() {
-        currentSongIndex++;
-        currentSongIndex = currentSongIndex % currentPlaylist.length;
+        let val = currentSongIndex
+        console.log(val)
+        val++;
+        if(val == currentPlaylist.length){
+            val = 0
+        }
+        console.log("AFTER INC", val)
+        setcurrentSongIndex(val)
         loadAndPlayCurrentSong(player)
     }
 
@@ -68,11 +77,14 @@ export default function YoutubePlayer() {
         setPlayer(event.target)
     }
     const handleBack = (e) => {
-        currentSongIndex--;
-        if(currentSongIndex < 0){
-            currentSongIndex = currentPlaylist.length
+        let val = currentSongIndex
+        console.log(val)
+        val--;
+        if(val < 0 ){
+            val = currentPlaylist.length - 1
         }
-
+        console.log("AFTER INC", val)
+        setcurrentSongIndex(val)
         loadAndPlayCurrentSong(player)
     }
     const handlePlay = (e) => {
@@ -81,7 +93,7 @@ export default function YoutubePlayer() {
         player.playVideo()
     }
     const handleStop = (e) => {
-      player.stopVideo()
+      player.pauseVideo()
   
     }
     // THIS IS OUR EVENT HANDLER FOR WHEN THE YOUTUBE PLAYER'S STATE
@@ -121,13 +133,29 @@ export default function YoutubePlayer() {
     let playListName = ""
     let currentSSong = ""
     let currentArtist = ""
-
+    let songHolder = ""
     if(store.currentList){
         playListName = store.currentList.name
         console.log(playListName)
-        currentSSong = store.currentList.songs[currentSongIndex].title
-        console.log(currentSSong)
-        currentArtist = store.currentList.songs[currentSongIndex].artist
+        if(store.currentList.songs[currentSongIndex]){
+            currentSSong = store.currentList.songs[currentSongIndex].title
+                console.log(currentSSong)
+            currentArtist = store.currentList.songs[currentSongIndex].artist
+        }
+        songHolder = <Box>
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Playlist: {playListName}
+            </Typography>
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Song: #{currentSongIndex}
+            </Typography>
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Song: {currentSSong}
+            </Typography>
+            <Typography sx = {{fontWeight: 'bold'}}>
+                Artist: {currentArtist}
+            </Typography>
+        </Box>
 
     }
     
@@ -149,15 +177,7 @@ export default function YoutubePlayer() {
         </div>
         <Box sx = {{backgroundColor: 'lightblue', width : "100%"}}>
             
-            <Typography sx = {{fontWeight: 'bold'}}>
-                Playlist: {playListName}
-            </Typography>
-            <Typography sx = {{fontWeight: 'bold'}}>
-                Song: {currentSSong}
-            </Typography>
-            <Typography sx = {{fontWeight: 'bold'}}>
-                Artist: {currentArtist}
-            </Typography>
+            {songHolder}
 
             <Box sx={{backgroundColor: "white", width : "45%", position:"relative", left:"28%"}}>
                 <IconButton>

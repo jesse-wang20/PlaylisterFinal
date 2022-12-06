@@ -14,7 +14,16 @@ const playlistSchema = new Schema(
             title: String,
             artist: String,
             youTubeId: String
-        }], required: true }
+        }], required: true },
+        comments: { type: [{
+            username: String,
+            comment: String,
+        }], required: true },
+        likes: {type: Number, required: true},
+        dislikes: {type: Number, required: true},
+        views: {type: Number, required: true},
+        publishedDate: {type: Date, default: Date.now, require: true}
+
     },
     { timestamps: true },
 )

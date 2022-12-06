@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom'
 import AuthContext from '../auth'
+import { GlobalStoreContext } from '../store'
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AppBar from '@mui/material/AppBar';
@@ -15,13 +16,17 @@ import { IconButton } from '@mui/material';
 
 export default function WelcomeScreenBanner() {
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
     const handleLogin = (event) =>
      {
         console.log("Bruh")
 
     };
     const handleLogout = (event) =>
-        console.log("no")
+    {
+        auth.logoutUser();
+        store.closeCurrentList();
+    }
 
      const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);

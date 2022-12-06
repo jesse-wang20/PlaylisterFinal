@@ -13,6 +13,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import MUIEditSongModal from './MUIEditSongModal'
 import MUIRemoveSongModal from './MUIRemoveSongModal'
+import CommentsWrapper from './CommentsWrapper'
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -66,7 +67,7 @@ const HomeScreen = () => {
         store.createNewList();
     }
     let listCard = "";
-    if (store) {
+    if (store.idNamePairs) {
         listCard = 
             <List sx={{ left: '5%' , top: "7%", bgcolor: 'background.paper' }}>
             {
@@ -75,6 +76,7 @@ const HomeScreen = () => {
                         key={pair._id}
                         idNamePair={pair}
                         selected={false}
+                        
                     />
                 ))
             }
@@ -105,7 +107,7 @@ const HomeScreen = () => {
                     <YoutubePlayerWrapper />
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    Comments
+                    <CommentsWrapper/>
                 </TabPanel>
 
                 
@@ -113,7 +115,7 @@ const HomeScreen = () => {
             <Box sx={{display: 'flex', position: 'absolute',alignItems:'center', left:"40%", bottom: '-20%', flexDirection: 'row', justifyContent:'center', textAlign:"center"}}>
                 <Typography sx={{fontSize : '32px'}} >
                     <IconButton >
-                        <AddIcon sx = {{color: 'black', fontSize: '64px'}}/>
+                        <AddIcon onClick={handleCreateNewList} sx = {{color: 'black', fontSize: '64px'}}/>
                     </IconButton>
                     Your Lists
                 </Typography>
