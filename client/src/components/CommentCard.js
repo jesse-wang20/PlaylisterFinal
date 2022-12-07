@@ -9,7 +9,6 @@ function CommentCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const { comment } = props;
     let cardClass = "list-card unselected-list-card";
-    console.log(comment)
     return (
         <Box>
             <Box>

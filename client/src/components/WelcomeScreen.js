@@ -16,11 +16,6 @@ import {
 } from './'
 
 export default function WelcomeScreen() {
-    const handleSubmit = (event) =>
-     {
-        console.log("Bruh")
-
-    };
 
     return (
         <Grid container sx={{ height: '100vh' }}>
@@ -93,7 +88,7 @@ export default function WelcomeScreen() {
                             my: "5%",
                         }}>
                             <Typography sx={{textAlign: "center", fontSize: "20px", fontStyle: 'italic'}}>Let's get started</Typography>
-                            <Button component={Link} to="/register" variant='contained' style = {{backgroundColor: '#FFFFFF', top:"10px"}}>
+                            <Button component={Link} to="/register" href="/register" variant='contained' style = {{backgroundColor: '#FFFFFF', top:"10px"}}>
                                 <Typography style = {{color: 'black'}}>
                                     Create Account
                                 </Typography>

@@ -37,45 +37,58 @@ function ListCard(props) {
     const { idNamePair, selected } = props;
 
     const [open, setOpen] = React.useState(false);
-    console.log(idNamePair)
     let likes = idNamePair.likes
     let Dislikes = idNamePair.dislikes
     let views = idNamePair.views
-    let date = idNamePair.publishedDate.substring(0,10)
-    console.log("HERE", likes)
+    let date = ""
+    let DateObj = <Typography>
+    &nbsp;&nbsp; views: {views}  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </Typography>
+    if(idNamePair.publishedDate){
+        date = idNamePair.publishedDate.substring(0,10)
+        DateObj = <Typography>
+        Published: {date} &nbsp;&nbsp; views: {views}  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </Typography>
+    }
     const handleCloseClick = (event) => {
+        store.closeCurrentList()
       setOpen(!open);
     }
     const handleAddSong = (event) => {
         store.addNewSong()
     }
     const handleDuplicate = (event,id) => {
-        console.log("HIT DUPLICATE")
         store.handleDuplicate(id)
     }
     const handleClick = (event,id) => {
         setOpen(!open);
-        store.handleView(idNamePair._id)
+        if(idNamePair.isPublished){
+            store.handleView(idNamePair._id)
+        }
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
-            let _id = event.target.id;
+            let _id = idNamePair._id
             if (_id.indexOf('list-card-text-') >= 0)
                 _id = ("" + _id).substring("list-card-text-".length);
 
-            console.log("load " + event.target.id);
+            console.log("load " + idNamePair._id);
 
             // CHANGE THE CURRENT LIST
-            store.setCurrentList(id);
+            // store.setCurrentList(idNamePairid);
         }
     };
     const handleDbl = (event) => {
         setEditActive(!editActive)
     }
     const handleLike = (event) => {
-        store.handleLike(idNamePair._id)
+        if(idNamePair.isPublished){
+            store.handleLike(idNamePair._id)
+        }
     }
     const handleDislike = () => {
-        store.handleDislike(idNamePair._id)
+        if(idNamePair.isPublished){
+            store.handleDislike(idNamePair._id)
+        }
     }
     const handleUndo = () => {
         store.undo()
@@ -92,6 +105,9 @@ function ListCard(props) {
         setEditActive(newActive);
     }
 
+    function handlePublish() {
+        store.handlePublish(idNamePair._id)
+    }
     async function handleDeleteList(event, id) {
         let _id = event.target.id;
         console.log("IDA", id)
@@ -119,8 +135,10 @@ function ListCard(props) {
     if (store.isListNameEditActive) {
         cardStatus = true;
     }
+    const user = "By" + ' ' + idNamePair.userName
     let songCard = null
     if(store.currentList){
+        
       songCard = <Box sx = {{marginRight:"10%", marginLeft:"10%"}}>
         <List 
       id="playlist-cards" 
@@ -157,7 +175,6 @@ function ListCard(props) {
     if(open){
         color = "#d69a29"
     }
-    console.log("LIKES IS", likes)
     let test = ""
     test = 
     <List
@@ -168,10 +185,8 @@ function ListCard(props) {
       
   >
     <ListItemButton onDoubleClick={handleDbl}>
-      <ListItemText primary={idNamePair.name} secondary = "By Jesse"  />
-       <Typography>
-         Published: {date} &nbsp;&nbsp; views: {views}  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-       </Typography>
+      <ListItemText primary={idNamePair.name} secondary = {user} />
+       {DateObj}
 
       <ThumbUpIcon onClick = {handleLike}/> 
       <Typography>
@@ -198,7 +213,7 @@ function ListCard(props) {
       <Button variant = "contained"  onClick = {handleRedo} sx = {{color: "black", background: "lightgray"}}>
         Redo
       </Button>
-      <Button variant = "contained" sx = {{color: "black", background: "lightgray"}}>
+      <Button variant = "contained" onClick = {handlePublish} sx = {{color: "black", background: "lightgray"}}>
         Publish
       </Button>
       <Button id={idNamePair._id} variant = "contained" onClick={(event) => {

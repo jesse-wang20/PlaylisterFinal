@@ -134,7 +134,14 @@ export default function YoutubePlayer() {
     let currentSSong = ""
     let currentArtist = ""
     let songHolder = ""
+    let YTPlayer = <Box sx={{backgroundColor: "gray", width: "100%", height: "390px"}}></Box>
     if(store.currentList){
+        YTPlayer = <YouTube
+        videoId={videoCode}
+        opts={playerOptions}
+        onReady={onPlayerReady}
+        onStateChange={onPlayerStateChange}
+        />
         playListName = store.currentList.name
         console.log(playListName)
         if(store.currentList.songs[currentSongIndex]){
@@ -167,12 +174,7 @@ export default function YoutubePlayer() {
         </div>
         <div>
             <div>
-            <YouTube
-            videoId={videoCode}
-            opts={playerOptions}
-            onReady={onPlayerReady}
-            onStateChange={onPlayerStateChange}
-            />
+            {YTPlayer}
             </div>
         </div>
         <Box sx = {{backgroundColor: 'lightblue', width : "100%"}}>
