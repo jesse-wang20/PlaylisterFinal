@@ -73,11 +73,15 @@ export default function TopBar() {
         store.loadAllPlaylists(2)
     };
     const menuId = 'primary-search-account-menu';
+    let dis = false
+    if(auth.isGuest){
+        dis = true
+    }
     if (auth.loggedIn){
         return <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" style = {{background: '#C0C0C0'}}>
             <Toolbar>
-                <IconButton>
+                <IconButton disabled = {dis} >
                     <HomeIcon onClick = {handleHome} sx = {{fontSize: "48px"}}/>
                 </IconButton>
                 <IconButton>

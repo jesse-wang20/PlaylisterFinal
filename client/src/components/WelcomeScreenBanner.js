@@ -81,7 +81,7 @@ export default function WelcomeScreenBanner() {
 
     let editToolbar = "";
     let menu = loggedOutMenu;
-    if (auth.loggedIn) {
+    if (auth.loggedIn && !auth.isGuest) {
         console.log("We are logged in")
         menu = loggedInMenu;
     }
@@ -89,7 +89,7 @@ export default function WelcomeScreenBanner() {
     let welcome = <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" style = {{background: '#f0f0f0'}}>
                 <Toolbar>
-                    <Typography
+                    <Typography component={Link} to="/"  
                         style = {{fontWeight: 'bold', fontStyle: 'italic', color: '#C71F1F', fontSize:'200%', flex: '1'}}>
                         Playlister
                     </Typography>
@@ -123,7 +123,7 @@ export default function WelcomeScreenBanner() {
     const bruh = <Box sx={{ flexGrow: 1 }}>
     <AppBar position="static" style = {{background: '#f0f0f0'}}>
         <Toolbar>
-            <Typography
+            <Typography  component={Link} to="/" 
                 style = {{fontWeight: 'bold', fontStyle: 'italic', color: '#C71F1F', fontSize:'200%', flex: '1'}}>
                 Playlister
             </Typography>

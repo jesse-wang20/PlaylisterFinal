@@ -6,7 +6,7 @@ import WelcomeScreen from './WelcomeScreen';
 export default function HomeWrapper() {
     const { auth } = useContext(AuthContext);
 
-    if (auth.loggedIn)
+    if (auth.loggedIn || auth.isGuest)
         return <HomeScreen />
     else
         return <WelcomeScreen />

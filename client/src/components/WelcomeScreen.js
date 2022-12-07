@@ -10,13 +10,21 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import Paper from '@mui/material/Paper';
 import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
+import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
+import { useContext } from 'react'
 
 import {
     WelcomeScreenBanner,
 } from './'
 
-export default function WelcomeScreen() {
 
+export default function WelcomeScreen() {
+    const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
+    function handleGuest(){
+        auth.guestLogin()
+    }
     return (
         <Grid container sx={{ height: '100vh' }}>
             <Grid item xs={false} 
@@ -32,7 +40,7 @@ export default function WelcomeScreen() {
                     }}>
                         Welcome to&nbsp; 
                     </Typography>
-                    <Typography sx ={{
+                    <Typography  sx ={{
                         display: "inline",
                         fontWeight: 'bold', fontStyle: 'italic', color: '#C71F1F', fontSize:'400%', flex: '1',
                         
@@ -105,7 +113,7 @@ export default function WelcomeScreen() {
                             my: "5%",
                         }}>
                             <Typography sx={{textAlign: "center", fontSize: "20px", fontStyle: 'italic'}}>Just want to browse?</Typography>
-                            <Button variant='contained' style = {{backgroundColor: '#FFFFFF', top:"10px"}}>
+                            <Button variant='contained' onClick = {handleGuest} style = {{backgroundColor: '#FFFFFF', top:"10px"}}>
                                 <Typography style = {{color: 'black'}}>
                                     Continue as guest
                                 </Typography>

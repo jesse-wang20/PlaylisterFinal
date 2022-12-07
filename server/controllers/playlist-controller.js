@@ -21,6 +21,14 @@ createPlaylist = (req, res) => {
     if (!playlist) {
         return res.status(400).json({ success: false, error: err })
     }
+    Playlist.findOne({name : playlist.name}, (err,pp) =>{
+        if(err){
+
+        }
+        else{
+            playlist.name = playlist.name + '(1)'   
+        }
+    })
 
     
     User.findOne({ _id: req.userId }, (err, user) => {
@@ -200,7 +208,7 @@ getPlaylistsByUser = async (req, res) => {
     console.log("getPlaylistsByUser");
     console.log(nameSearch)
     async function asyncFindList() {
-        await Playlist.find({userName: nameSearch }, (err, playlists) => {
+        await Playlist.find({userName: { "$regex": nameSearch, "$options": "i" }, isPublished: true}, (err, playlists) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err })
             }
@@ -230,7 +238,7 @@ getPlaylistsByName = async (req, res) => {
     console.log("getPlaylistsByName");
     console.log(nameSearch)
     async function asyncFindList() {
-        await Playlist.find({name: { "$regex": nameSearch, "$options": "i" }  }, (err, playlists) => {
+        await Playlist.find({name: { "$regex": nameSearch, "$options": "i" }, isPublished: true  }, (err, playlists) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err })
             }

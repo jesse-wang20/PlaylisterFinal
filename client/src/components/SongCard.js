@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    
     const [ draggedTo, setDraggedTo ] = useState(0);
     const { song, index } = props;
 
@@ -42,7 +43,7 @@ function SongCard(props) {
     }
     function handleClick(event) {
         // DOUBLE CLICK IS FOR SONG EDITING
-        if (event.detail === 2) {
+        if (event.detail === 2 && !store.currentList.isPublished) {
             console.log(store.isEditSongModalOpen())
             store.showEditSongModal(index, song);
         }
@@ -75,6 +76,7 @@ function SongCard(props) {
             onDrop={handleDrop}
             draggable={val}
             onClick={handleClick}
+            style= {{color :'yellow'}}
         >
             {index + 1}.
             <b

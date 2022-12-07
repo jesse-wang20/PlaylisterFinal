@@ -154,7 +154,7 @@ export default function YoutubePlayer() {
                 Playlist: {playListName}
             </Typography>
             <Typography sx = {{fontWeight: 'bold'}}>
-                Song: #{currentSongIndex}
+                Song: #{currentSongIndex + 1}
             </Typography>
             <Typography sx = {{fontWeight: 'bold'}}>
                 Song: {currentSSong}

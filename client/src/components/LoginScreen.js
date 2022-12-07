@@ -31,7 +31,7 @@ export default function LoginScreen() {
                 formData.get('email'),
                 formData.get('password')
             ).then( 
-                (val) => console.log("success in loggin in"))
+                (val) => store.setHomeScreen())
             .catch(
                 (error) => store.logInError(error.response.status)
                 

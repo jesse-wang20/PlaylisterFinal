@@ -145,6 +145,11 @@ function GlobalStoreContextProvider(props) {
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                if(payload.addTo){
+                    if(payload.addTo.crazy == 1){
+                        store.newListCounter = store.newListCounter + 1
+                    }
+                }
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     idNamePairs: payload.pairsArray,
@@ -342,7 +347,6 @@ function GlobalStoreContextProvider(props) {
                 });
             }
             case GlobalStoreActionType.CHANGE_SCREEN:{
-                console.log("CHANGED CURRENT SCREEN", payload)
                 return setStore({
                     currentModal : store.currentModal,
                     idNamePairs: store.idNamePairs,
@@ -390,11 +394,16 @@ function GlobalStoreContextProvider(props) {
             return 0;
         })
         console.log(val)
+        let nn = "Guest"
+        if(!auth.isGuest){
+            nn = auth.user.username
+        }
+
         storeReducer({
             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
             payload: {
                 pairsArray: val,
-                currentUser: auth.user.username,
+                currentUser: {nn},
                 number: store.currentScreen
             }
         });
@@ -406,11 +415,16 @@ function GlobalStoreContextProvider(props) {
             if(a.publishedDate < b.publishedDate) { return 1; }
             return 0;
         })
+        let nn = "Guest"
+        if(!auth.isGuest){
+            nn = auth.user.username
+        }
+
         storeReducer({
             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
             payload: {
                 pairsArray: val,
-                currentUser: auth.user.username,
+                currentUser: {nn},
                 number: store.currentScreen
             }
         });
@@ -423,11 +437,16 @@ function GlobalStoreContextProvider(props) {
             return 0;
         })
         console.log(val)
+        let nn = "Guest"
+        if(!auth.isGuest){
+            nn = auth.user.username
+        }
+
         storeReducer({
             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
             payload: {
                 pairsArray: val,
-                currentUser: auth.user.username,
+                currentUser: {nn},
                 number: store.currentScreen
             }
         });
@@ -439,11 +458,16 @@ function GlobalStoreContextProvider(props) {
             if(a.likes < b.likes) { return 1; }
             return 0;
         })
+        let nn = "Guest"
+        if(!auth.isGuest){
+            nn = auth.user.username
+        }
+
         storeReducer({
             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
             payload: {
                 pairsArray: val,
-                currentUser: auth.user.username,
+                currentUser: {nn},
                 number: store.currentScreen
             }
         });
@@ -455,11 +479,16 @@ function GlobalStoreContextProvider(props) {
             if(a.dislikes < b.dislikes) { return 1; }
             return 0;
         })
+        let nn = "Guest"
+        if(!auth.isGuest){
+            nn = auth.user.username
+        }
+
         storeReducer({
             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
             payload: {
                 pairsArray: val,
-                currentUser: auth.user.username,
+                currentUser: {nn},
                 number: store.currentScreen
             }
         });
@@ -579,14 +608,15 @@ function GlobalStoreContextProvider(props) {
             if (response.data.success) {
                 let playlist = response.data.playlist;
                 async function updateList(playlist) {
-                    response = api.createPlaylist(playlist.name, playlist.songs, auth.user.email, []);
+                    response = await api.createPlaylist(playlist.name, playlist.songs, auth.user.email, [], auth.user.username);
+                    console.log(response)
                     if (response.status === 201) {
                         let newList = response.data.playlist;
-                        storeReducer({
-                            type: GlobalStoreActionType.CREATE_NEW_LIST,
-                            payload: newList
-                        }
-                        );
+                        // storeReducer({
+                        //     type: GlobalStoreActionType.CREATE_NEW_LIST,
+                        //     payload: newList
+                        // }
+                        // );
             
                         // IF IT'S A VALID LIST THEN LET'S START EDITING IT
                         history.push("/")
@@ -629,32 +659,66 @@ function GlobalStoreContextProvider(props) {
         }
         asyncChangeListName(id);
     }
+    store.setHomeScreen = function(){
+        storeReducer({
+            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+            payload: {
+                pairsArray: store.pairsArray,
+                currentUser: auth.user.username,
+                number: 0
+            }
+        });
+    }
     store.handleView = function(id){
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
                 let playlist = response.data.playlist;
                 playlist.views = playlist.views + 1;
-                async function updateList(playlist) {
-                    response = await api.updatePlaylistById(playlist._id, playlist);
-                    if (response.data.success) {
-                        async function getListPairs(playlist) {
-                            response = await api.getPubPlaylistPairs();
-                            if (response.data.success) {
-                                let pairsArray = response.data.idNamePairs;
-                                storeReducer({
-                                    type: GlobalStoreActionType.VIEW,
-                                    payload: {
-                                        idNamePairs: pairsArray,
-                                        playlist: playlist
-                                    }
-                                });
+                if(store.currentScreen == 0){
+                    async function updateList(playlist) {
+                        response = await api.updatePlaylistById(playlist._id, playlist);
+                        if (response.data.success) {
+                            async function getListPairs(playlist) {
+                                response = await api.getPlaylistPairs();
+                                if (response.data.success) {
+                                    let pairsArray = response.data.idNamePairs;
+                                    storeReducer({
+                                        type: GlobalStoreActionType.VIEW,
+                                        payload: {
+                                            idNamePairs: pairsArray,
+                                            playlist: playlist
+                                        }
+                                    });
+                                }
                             }
+                            getListPairs(playlist);
                         }
-                        getListPairs(playlist);
                     }
+                    updateList(playlist);
                 }
-                updateList(playlist);
+                else{
+                    async function updateList(playlist) {
+                        response = await api.updatePlaylistById(playlist._id, playlist);
+                        if (response.data.success) {
+                            async function getListPairs(playlist) {
+                                response = await api.getPubPlaylistPairs();
+                                if (response.data.success) {
+                                    let pairsArray = response.data.idNamePairs;
+                                    storeReducer({
+                                        type: GlobalStoreActionType.VIEW,
+                                        payload: {
+                                            idNamePairs: pairsArray,
+                                            playlist: playlist
+                                        }
+                                    });
+                                }
+                            }
+                            getListPairs(playlist);
+                        }
+                    }
+                    updateList(playlist);
+                }
             }
         }
         asyncChangeListName(id);
@@ -672,13 +736,14 @@ function GlobalStoreContextProvider(props) {
 
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
-        let newListName = "Untitled" + store.newListCounter;
-
+        let newListName = "Untitled " + store.newListCounter;
+        console.log("NEW LIST COUNTER", store.newListCounter)
+        
         const response = await api.createPlaylist(newListName, [], auth.user.email, [], auth.user.username);
-        console.log("createNewList response: " + response);
         if (response.status === 201) {
             tps.clearAllTransactions();
             let newList = response.data.playlist;
+            store.loadIdNamePairs(1);
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
                 payload: newList
@@ -749,14 +814,17 @@ function GlobalStoreContextProvider(props) {
         }
         async function asyncLoadIdNamePairs() {
             const response = await api.getPubPlaylistPairs();
-            console.log(response)
             if (response.data.success) {
                 let pairsArray = response.data.idNamePairs;
+                let val = "Guest"
+                if(!auth.isGuest){
+                    val = auth.user.username
+                }
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: {
                         pairsArray: pairsArray,
-                        currentUser: auth.user.username,
+                        currentUser: {val},
                         number: num
                     }
                 });
@@ -770,78 +838,118 @@ function GlobalStoreContextProvider(props) {
     store.searchFunction = function (text) {
         console.log("CURRENT SCREEN, ", store.currentScreen)
         console.log("TExT", text)
-        if(store.currentScreen == 2){
-            console.log("USERS searcj")
-            async function asyncLoadIdNamePairs() {
-                const response = await api.getPlaylistsByUser(text);
-                console.log(response)
-                if (response.data.success) {
-                    let pairsArray = response.data.idNamePairs;
-                    storeReducer({
-                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                        payload: {
-                            pairsArray: pairsArray,
-                            currentUser: auth.user.username,
-                            number: store.currentScreen
-                        }
-                    });
-                }
-                else {
-                    console.log("API FAILED TO GET THE LIST PAIRS");
-                }
+        if(text == ""){
+            let val = "Guest"
+            if(!auth.isGuest){
+                val = auth.user.username
             }
-            asyncLoadIdNamePairs();
+            storeReducer({
+                type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                payload: {
+                    pairsArray: [],
+                    currentUser: {val},
+                    number: store.currentScreen
+                }
+            });
         }
-        if(store.currentScreen == 1){
-            console.log("Name searcj")
-            async function asyncLoadIdNamePairs() {
-                const response = await api.getPlaylistsByName(text);
-                console.log(response)
-                if (response.data.success) {
-                    let pairsArray = response.data.idNamePairs;
-                    storeReducer({
-                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                        payload: {
-                            pairsArray: pairsArray,
-                            currentUser: auth.user.username,
-                            number: store.currentScreen
+        else{
+            if(store.currentScreen == 2){
+                console.log("USERS searcj")
+                async function asyncLoadIdNamePairs() {
+                    const response = await api.getPlaylistsByUser(text);
+                    console.log(response)
+                    if (response.data.success) {
+                        let pairsArray = response.data.idNamePairs;
+                        let val = "Guest"
+                        if(!auth.isGuest){
+                            val = auth.user.username
                         }
-                    });
+                        storeReducer({
+                            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                            payload: {
+                                pairsArray: pairsArray,
+                                currentUser: {val},
+                                number: store.currentScreen
+                            }
+                        });
+                        }
+                    else {
+                        console.log("API FAILED TO GET THE LIST PAIRS");
+                    }
                 }
-                else {
-                    console.log("API FAILED TO GET THE LIST PAIRS");
-                }
+                asyncLoadIdNamePairs();
             }
-            asyncLoadIdNamePairs();
+            if(store.currentScreen == 1){
+                console.log("Name searcj")
+                async function asyncLoadIdNamePairs() {
+                    const response = await api.getPlaylistsByName(text);
+                    console.log(response)
+                    if (response.data.success) {
+                        let pairsArray = response.data.idNamePairs;
+                        let val = "Guest"
+                        if(!auth.isGuest){
+                            val = auth.user.username
+                        }
+                        storeReducer({
+                            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                            payload: {
+                                pairsArray: pairsArray,
+                                currentUser: {val},
+                                number: store.currentScreen
+                            }
+                        });
+                    }
+                    else {
+                        console.log("API FAILED TO GET THE LIST PAIRS");
+                    }
+                }
+                asyncLoadIdNamePairs();
+
+        }
         }
 
 
     }
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
-    store.loadIdNamePairs = function () {
-        storeReducer({
-            type: GlobalStoreActionType.CHANGE_SCREEN,
-            payload: 0
-        });
-        async function asyncLoadIdNamePairs() {
-            const response = await api.getPlaylistPairs();
-            console.log(response)
-            if (response.data.success) {
-                let pairsArray = response.data.idNamePairs;
-                storeReducer({
-                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                    payload: {
-                        pairsArray: pairsArray,
-                        currentUser: auth.user.username,
-                        number: store.currentScreen
-                    }
-                });
-            }
-            else {
-                console.log("API FAILED TO GET THE LIST PAIRS");
-            }
+    store.loadIdNamePairs = function (create) {
+        if(auth.isGuest){
+            store.loadAllPlaylists(1)
         }
-        asyncLoadIdNamePairs();
+        else{
+            let crazy = null
+            if(create){
+                crazy = 1
+                console.log("CRAZY SET")
+            }
+            storeReducer({
+                type: GlobalStoreActionType.CHANGE_SCREEN,
+                payload: 0
+            });
+            async function asyncLoadIdNamePairs() {
+                const response = await api.getPlaylistPairs();
+                console.log(response)
+                if (response.data.success) {
+                    let pairsArray = response.data.idNamePairs;
+                    let val = "Guest"
+                    if(!auth.isGuest){
+                        val = auth.user.username
+                    }
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: {
+                            pairsArray: pairsArray,
+                            currentUser: {val},
+                            number: store.currentScreen,
+                            addTo: {crazy}
+                        }
+                    });
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS");
+                }
+            }
+            asyncLoadIdNamePairs();
+        }
     }
     store.logInError = function(cer){
         let errorMessage = ""

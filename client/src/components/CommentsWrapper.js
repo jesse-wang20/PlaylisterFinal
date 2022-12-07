@@ -6,9 +6,11 @@ import { GlobalStoreContext } from '../store'
 import CommentCard from './CommentCard'
 import DeleteIcon from '@mui/icons-material/Delete';
 import List from "@mui/material/List";
+import AuthContext from '../auth'
 
 function CommentsWrapper(props) {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [text, setText] = useState("");
 
     function handleUpdateText(event) {
@@ -39,13 +41,17 @@ function CommentsWrapper(props) {
         )) 
       }
    </List> </Box>  
-    }   
+    }
+    let enabled = false
+    if(auth.isGuest){
+        enabled = true
+    }
     return (
         <Box sx ={{backgroundColor: "#1980ba"}}>
             <Box sx ={{width: "100%", height: "300px", backgroundColor: "#1980ba"}}>
                 {comments}
             </Box>
-            <TextField  onKeyPress={handleKeyPress}
+            <TextField disabled = {enabled}  onKeyPress={handleKeyPress}
                 onChange={handleUpdateText} value = {text} label="Add Comment" sx={{width: "100%"}}>
 
             </TextField>

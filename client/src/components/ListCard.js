@@ -21,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import SongCard from './SongCard';
+import AuthContext from '../auth'
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -31,10 +32,12 @@ import SongCard from './SongCard';
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     // const [likes, setLikes] = useState(0)
     const { idNamePair, selected } = props;
+
 
     const [open, setOpen] = React.useState(false);
     let likes = idNamePair.likes
@@ -62,16 +65,13 @@ function ListCard(props) {
     }
     const handleClick = (event,id) => {
         if(store.currentList){
-            console.log("NO SIR")
         }
         else{
             setOpen(!open);
             if(store.currentScreen && store.currentScreen != 0 && idNamePair.isPublished){
-                console.log("Jamama")
                 store.handleView(idNamePair._id)
             }
             else{
-                console.log("HEREADAS")
                 store.setCurrentList(idNamePair._id);
             }
             console.log("handleLoadList for " + id);
@@ -88,7 +88,12 @@ function ListCard(props) {
         }
     };
     const handleDbl = (event) => {
-        setEditActive(!editActive)
+        if(idNamePair.isPublished){
+
+        }
+        else{
+            setEditActive(!editActive)
+        }
     }
     const handleLike = (event) => {
         if(idNamePair.isPublished){
@@ -120,9 +125,7 @@ function ListCard(props) {
     }
     async function handleDeleteList(event, id) {
         let _id = event.target.id;
-        console.log("IDA", id)
         _id = ("" + _id).substring("delete-list-".length);
-        console.log(id)
         store.markListForDeletion(id);
     }
 
@@ -171,10 +174,26 @@ function ListCard(props) {
   <Button variant = "contained" onClick = {handlePublish} sx = {{color: "black", background: "lightgray"}}>
     Publish
   </Button></Box>
+    let DeleteButton = ""
+    let DuplicateButton = ""
     if(store.currentList){
         if(store.currentList.isPublished){
             addSongComponent = ""
             FoolProofButtons = ""
+        }
+        if(auth.user){
+            if(store.currentList.userName == auth.user.username){
+                DeleteButton = <Button id={idNamePair._id} variant = "contained" onClick={(event) => {
+                    handleDeleteList(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
+            Delete
+            </Button>
+            }
+        }
+        if(!auth.isGuest){
+            DuplicateButton = <Button variant = "contained" onClick={(event) => {
+                handleDuplicate(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
+Duplicate
+</Button>
         }
       songCard = <Box sx = {{marginRight:"10%", marginLeft:"10%"}}>
         <List 
@@ -231,14 +250,8 @@ function ListCard(props) {
          </Box>
       </List>
       {FoolProofButtons}
-      <Button id={idNamePair._id} variant = "contained" onClick={(event) => {
-                        handleDeleteList(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
-          Delete
-      </Button>
-      <Button variant = "contained" onClick={(event) => {
-                        handleDuplicate(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
-        Duplicate
-      </Button>
+      {DeleteButton}
+      {DuplicateButton}
     </Collapse>
   </List>
     

@@ -11,13 +11,15 @@ export const AuthActionType = {
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
     REGISTER_USER: "REGISTER_USER",
-    SET_LOGGED_IN: "SET_LOGGED_IN"
+    SET_LOGGED_IN: "SET_LOGGED_IN",
+    GUEST_LOGIN: "GUEST_LOGIN"
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
-        loggedIn: false
+        loggedIn: false,
+        isGuest: null,
     });
     const history = useHistory();
 
@@ -31,31 +33,43 @@ function AuthContextProvider(props) {
             case AuthActionType.GET_LOGGED_IN: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: payload.loggedIn
+                    loggedIn: payload.loggedIn,
+                    isGuest: null,
                 });
             }
             case AuthActionType.LOGIN_USER: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: true
+                    loggedIn: true,
+                    isGuest: false,
                 })
             }
             case AuthActionType.LOGOUT_USER: {
                 return setAuth({
                     user: null,
-                    loggedIn: false
+                    loggedIn: false,
+                    isGuest: null,
                 })
             }
             case AuthActionType.REGISTER_USER: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: true
+                    loggedIn: true,
+                    isGuest: null,
                 })
             }
             case AuthActionType.SET_LOGGED_IN: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: payload.loggedIn
+                    loggedIn: payload.loggedIn,
+                    isGuest: null,
+                })
+            }
+            case AuthActionType.GUEST_LOGIN:{
+                return setAuth({
+                    user: null,
+                    loggedIn: true,
+                    isGuest: true,
                 })
             }
             default:
@@ -64,18 +78,26 @@ function AuthContextProvider(props) {
     }
 
     auth.getLoggedIn = async function () {
-        const response = await api.getLoggedIn();
-        if (response.status === 200) {
-            authReducer({
-                type: AuthActionType.SET_LOGGED_IN,
-                payload: {
-                    loggedIn: response.data.loggedIn,
-                    user: response.data.user
-                }
-            });
+        if(!auth.isGuest){
+            const response = await api.getLoggedIn();
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.SET_LOGGED_IN,
+                    payload: {
+                        loggedIn: response.data.loggedIn,
+                        user: response.data.user
+                    }
+                });
+            }
         }
-    }
 
+    }
+    auth.guestLogin = async function (){
+        authReducer({
+            type: AuthActionType.GUEST_LOGIN,
+
+        });
+    }
     auth.registerUser = async function(firstName, lastName, email, username, password, passwordVerify) {
         console.log("create user: " + firstName + " " + lastName + " " + email+ " " + username + " " + " " + password + " " + passwordVerify);
         const response = await api.registerUser(firstName, lastName, email, username, password, passwordVerify);      

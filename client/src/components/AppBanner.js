@@ -13,14 +13,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 export default function AppBanner() {
-    const handleLogin = (event) =>
-     {
-
-    };
     const welcome = <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" style = {{background: '#f0f0f0'}}>
                 <Toolbar>
-                    <Typography
+                    <Typography  component={Link} to="/" 
                         style = {{fontWeight: 'bold', fontStyle: 'italic', color: '#C71F1F', fontSize:'200%', flex: '1'}}>
                         Playlister
                     </Typography>
@@ -39,31 +35,10 @@ export default function AppBanner() {
                             </Button>
                         </Grid>
                     </Grid>
-                        {/* <Typography style = {{color: 'black'}}>
-                            Been here before?
-                        </Typography>
-                        <Button variant='contained' style = {{backgroundColor: '#FFFFFF'}}>
-                            <Typography style = {{color: 'black'}}>
-                                Login
-                            </Typography>
-                        </Button> */}
                     </Box>
                 </Toolbar>
             </AppBar>
         </Box>
-    const bruh = <Box sx={{ flexGrow: 1 }}>
-    <AppBar position="static" style = {{background: '#f0f0f0'}}>
-        <Toolbar>
-            <Typography
-                style = {{fontWeight: 'bold', fontStyle: 'italic', color: '#C71F1F', fontSize:'200%', flex: '1'}}>
-                Playlister
-            </Typography>
-            <AccountCircle sx = {{color: "gray"}}>
-                
-            </AccountCircle>
-        </Toolbar>
-    </AppBar>
-</Box>
     return (
         welcome
     );

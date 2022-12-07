@@ -14,6 +14,7 @@ import Tab from '@mui/material/Tab';
 import MUIEditSongModal from './MUIEditSongModal'
 import MUIRemoveSongModal from './MUIRemoveSongModal'
 import CommentsWrapper from './CommentsWrapper'
+import AuthContext from '../auth'
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -46,8 +47,17 @@ function TabPanel(props: TabPanelProps) {
   }
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [value, setValue] = React.useState(0);
-
+    let GuestLock = <Typography sx={{fontSize : '32px'}} >
+    <IconButton >
+        <AddIcon onClick={handleCreateNewList} sx = {{color: 'black', fontSize: '64px'}}/>
+    </IconButton>
+    Your Lists
+</Typography>
+    if(auth.isGuest){
+        GuestLock = ""
+    }
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
@@ -82,6 +92,14 @@ const HomeScreen = () => {
             }
             </List>;
     }
+    let comments = ""
+    if(store.currentList){
+        if(store.currentList.isPublished){
+            comments = <TabPanel value={value} index={1}>
+            <CommentsWrapper/>
+        </TabPanel>
+        }
+    }
     return (
         <Grid container sx={{ height: '100vh', backgroundColor: '#C0C0C0', overflowY: "scroll"}}>
             <Grid item 
@@ -106,19 +124,12 @@ const HomeScreen = () => {
                 <TabPanel value={value} index={0}>
                     <YoutubePlayerWrapper />
                 </TabPanel>
-                <TabPanel value={value} index={1}>
-                    <CommentsWrapper/>
-                </TabPanel>
+                {comments}
 
                 
             </Grid>
             <Box sx={{display: 'flex', position: 'absolute',alignItems:'center', left:"40%", bottom: '-20%', flexDirection: 'row', justifyContent:'center', textAlign:"center"}}>
-                <Typography sx={{fontSize : '32px'}} >
-                    <IconButton >
-                        <AddIcon onClick={handleCreateNewList} sx = {{color: 'black', fontSize: '64px'}}/>
-                    </IconButton>
-                    Your Lists
-                </Typography>
+                {GuestLock}
             </Box>
             {modalJSX}
         </Grid>
