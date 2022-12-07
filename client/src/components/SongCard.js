@@ -47,7 +47,22 @@ function SongCard(props) {
             store.showEditSongModal(index, song);
         }
     }
-
+    let val = true
+    let deletes =  <IconButton display="flex"
+    justifyContent="flex-end"
+    alignItems="flex-end">
+        <DeleteIcon type="button"
+        id={"remove-song-" + index}
+        value={"\u2715"}
+        onClick={handleRemoveSong}
+        sx = {{marginRight:"10%", color: "white"}}></DeleteIcon>
+    </IconButton>
+    if(store.currentList){
+        if(store.currentList.isPublished){
+            val = false;
+            deletes = ""
+        }
+    }
     let cardClass = "list-card unselected-list-card";
     return (
         <div
@@ -58,7 +73,7 @@ function SongCard(props) {
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            draggable="true"
+            draggable={val}
             onClick={handleClick}
         >
             {index + 1}.
@@ -69,16 +84,8 @@ function SongCard(props) {
                 href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
                 {song.title} by {song.artist}
             </b>
-
-                <IconButton display="flex"
-                justifyContent="flex-end"
-                alignItems="flex-end">
-                    <DeleteIcon type="button"
-                    id={"remove-song-" + index}
-                    value={"\u2715"}
-                    onClick={handleRemoveSong}
-                    sx = {{marginRight:"10%", color: "white"}}></DeleteIcon>
-                </IconButton>
+            {deletes}
+               
 
         </div>
     );

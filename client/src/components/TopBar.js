@@ -31,7 +31,6 @@ export default function TopBar() {
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             store.searchFunction(text)
-            setText("")
         }
     }
     const handleProfileMenuOpen = (event) => {

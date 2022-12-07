@@ -61,20 +61,30 @@ function ListCard(props) {
         store.handleDuplicate(id)
     }
     const handleClick = (event,id) => {
-        setOpen(!open);
-        if(idNamePair.isPublished){
-            store.handleView(idNamePair._id)
+        if(store.currentList){
+            console.log("NO SIR")
         }
-        console.log("handleLoadList for " + id);
-        if (!event.target.disabled) {
-            let _id = idNamePair._id
-            if (_id.indexOf('list-card-text-') >= 0)
-                _id = ("" + _id).substring("list-card-text-".length);
+        else{
+            setOpen(!open);
+            if(store.currentScreen && store.currentScreen != 0 && idNamePair.isPublished){
+                console.log("Jamama")
+                store.handleView(idNamePair._id)
+            }
+            else{
+                console.log("HEREADAS")
+                store.setCurrentList(idNamePair._id);
+            }
+            console.log("handleLoadList for " + id);
+            if (!event.target.disabled) {
+                let _id = idNamePair._id
+                if (_id.indexOf('list-card-text-') >= 0)
+                    _id = ("" + _id).substring("list-card-text-".length);
 
-            console.log("load " + idNamePair._id);
+                console.log("load " + idNamePair._id);
 
-            // CHANGE THE CURRENT LIST
-            // store.setCurrentList(idNamePairid);
+                // CHANGE THE CURRENT LIST
+                // store.setCurrentList(idNamePairid);
+            }
         }
     };
     const handleDbl = (event) => {
@@ -137,8 +147,35 @@ function ListCard(props) {
     }
     const user = "By" + ' ' + idNamePair.userName
     let songCard = null
+    let addSongComponent = <div>
+            <b
+                style= {{color :'yellow'}}
+                className="song-link">
+                Add Song
+            </b>
+
+                <IconButton display="flex"
+                >
+                    <AddIcon type="button"
+                    onClick={handleAddSong}
+                    sx = {{marginRight:"10%", color: "white"}}></AddIcon>
+                </IconButton>
+
+        </div>
+    let FoolProofButtons =  <Box><Button variant = "contained" onClick = {handleUndo} sx = {{color: "black", background: "lightgray"}}>
+    Undo
+  </Button>
+  <Button variant = "contained"  onClick = {handleRedo} sx = {{color: "black", background: "lightgray"}}>
+    Redo
+  </Button>
+  <Button variant = "contained" onClick = {handlePublish} sx = {{color: "black", background: "lightgray"}}>
+    Publish
+  </Button></Box>
     if(store.currentList){
-        
+        if(store.currentList.isPublished){
+            addSongComponent = ""
+            FoolProofButtons = ""
+        }
       songCard = <Box sx = {{marginRight:"10%", marginLeft:"10%"}}>
         <List 
       id="playlist-cards" 
@@ -154,21 +191,7 @@ function ListCard(props) {
               />
           ))  
       }
-      <div>
-            <b
-                style= {{color :'yellow'}}
-                className="song-link">
-                Add Song
-            </b>
-
-                <IconButton display="flex"
-                >
-                    <AddIcon type="button"
-                    onClick={handleAddSong}
-                    sx = {{marginRight:"10%", color: "white"}}></AddIcon>
-                </IconButton>
-
-        </div>
+      {addSongComponent}
    </List> </Box>  
     }
     let color = "background.paper"
@@ -207,15 +230,7 @@ function ListCard(props) {
           {songCard}           
          </Box>
       </List>
-      <Button variant = "contained" onClick = {handleUndo} sx = {{color: "black", background: "lightgray"}}>
-        Undo
-      </Button>
-      <Button variant = "contained"  onClick = {handleRedo} sx = {{color: "black", background: "lightgray"}}>
-        Redo
-      </Button>
-      <Button variant = "contained" onClick = {handlePublish} sx = {{color: "black", background: "lightgray"}}>
-        Publish
-      </Button>
+      {FoolProofButtons}
       <Button id={idNamePair._id} variant = "contained" onClick={(event) => {
                         handleDeleteList(event, idNamePair._id)}} sx = {{color: "black", background: "lightgray", float: "right"}}>
           Delete
