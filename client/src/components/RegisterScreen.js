@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import AuthContext from '../auth'
 import GlobalStoreContext from '../store';
 
+import MUIRegisterModal from './MUIRegisterModal';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -16,6 +17,11 @@ import Container from '@mui/material/Container';
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
+    let modalJSX = ""
+    console.log("regOk", store.registerOk)
+    if(store.registerOk){
+        modalJSX = <MUIRegisterModal />;
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -133,6 +139,7 @@ export default function RegisterScreen() {
                     </Grid>
                 </Grid>
             </Box>
+            {modalJSX}
         </Box>
     </Container>
     );
