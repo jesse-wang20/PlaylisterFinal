@@ -76,7 +76,7 @@ loginUser = async (req, res) => {
             user: {
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName, 
-                userName: existingUser.username,
+                username: existingUser.username,
                 email: existingUser.email              
             }
         })

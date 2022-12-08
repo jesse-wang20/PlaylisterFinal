@@ -966,6 +966,8 @@ function GlobalStoreContextProvider(props) {
                     let pairsArray = response.data.idNamePairs;
                     let val = "Guest"
                     if(!auth.isGuest){
+                        console.log("NOT A GUEST NO MORE")
+                        console.log(auth.user.username)
                         val = auth.user.username
                     }
                     storeReducer({

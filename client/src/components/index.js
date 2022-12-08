@@ -9,7 +9,9 @@ import ListCard from './ListCard'
 import MUIDeleteModal from './MUIDeleteModal'
 import MUIEditSongModal from './MUIEditSongModal'
 import TopBar from './TopBar'
+import TopBar2 from './TopBar2'
 import YoutubePlayer from './YoutubePlayer'
+import TopBarWrapper from './TopBarWrapper'
 /*
     This serves as a module so that we can import
     all the other components as we wish.
@@ -27,5 +29,7 @@ export {
     MUIDeleteModal,
     YoutubePlayer,
     TopBar,
+    TopBar2,
+    TopBarWrapper,
     MUIEditSongModal,
     }

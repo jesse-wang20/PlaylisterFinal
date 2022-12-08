@@ -239,7 +239,7 @@ Duplicate
       <Typography>
         &nbsp;&nbsp; {Dislikes} &nbsp;&nbsp;
       </Typography>
-      {store.currentList ? <ExpandLess onClick = {handleCloseClick} /> : <ExpandMore onClick={(event) => {
+      {open ? <ExpandLess onClick = {handleCloseClick} /> : <ExpandMore onClick={(event) => {
                 handleClick(event, idNamePair._id)
             }}/>}
     </ListItemButton>

@@ -1,0 +1,15 @@
+import { useContext } from 'react'
+import TopBar from './TopBar'
+import AuthContext from '../auth'
+import TopBar2 from './TopBar2';
+
+export default function TopBarWrapper() {
+    const { auth } = useContext(AuthContext);
+
+    if (auth.isGuest){
+        return <TopBar />
+    }
+    else{
+        return <TopBar2 />
+    }
+}

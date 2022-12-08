@@ -18,7 +18,7 @@ import { IconButton, TextField } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import { GlobalStoreContext } from '../store'
 
-export default function TopBar() {
+export default function TopBar2() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext)
     const [anchorEl, setAnchorEl] = useState(null);
@@ -108,14 +108,18 @@ export default function TopBar() {
         </Box>)
     };
     const menuId = 'primary-search-account-menu';
-    const [color1, setColor1] = useState( <Box sx={{width : "45%"}}> <IconButton  >
-        <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "blue"}}/>
+    let dis = false
+    const [color1, setColor1] = useState( <Box sx={{width : "45%"}}> <IconButton  disabled = {true} >
+        <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
     </IconButton> <IconButton>
-        <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/> </IconButton> 
+        <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/> </IconButton> 
         <IconButton>
         <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
     </IconButton>
     </Box>)
+    if(!auth.isGuest){
+        return null
+    }
     // if(dis){
     //     setColor1(<Box sx={{width : "45%"}}> <IconButton  disabled = {dis} >
     //     <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
@@ -127,9 +131,6 @@ export default function TopBar() {
     // </Box>)
 
     // }
-    if(auth.isGuest){
-        return null
-    }
     if (auth.loggedIn &&  window.location.href != "http://localhost:3000/register" && window.location.href != "http://localhost:3000/login"){
         return <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" style = {{background: '#C0C0C0'}}>
