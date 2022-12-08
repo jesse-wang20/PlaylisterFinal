@@ -958,10 +958,7 @@ function GlobalStoreContextProvider(props) {
                 crazy = 1
                 console.log("CRAZY SET")
             }
-            storeReducer({
-                type: GlobalStoreActionType.CHANGE_SCREEN,
-                payload: 0
-            });
+
             async function asyncLoadIdNamePairs() {
                 const response = await api.getPlaylistPairs();
                 console.log(response)
@@ -976,7 +973,7 @@ function GlobalStoreContextProvider(props) {
                         payload: {
                             pairsArray: pairsArray,
                             currentUser: val,
-                            number: store.currentScreen,
+                            number: 0,
                             addTo: {crazy}
                         }
                     });

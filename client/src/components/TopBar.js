@@ -24,7 +24,6 @@ export default function TopBar() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [text, setText] = useState ("")
     const isMenuOpen = Boolean(anchorEl);
-
     function handleUpdateText(event) {
         setText(event.target.value);
     }
@@ -62,37 +61,85 @@ export default function TopBar() {
     }
     const handleHome = (event) =>
      {
-        store.closeCurrentList()
         store.loadIdNamePairs()
+        let dis = false
+        if(auth.isGuest){
+            dis = true
+        }
+        setColor1(<IconButton disabled = {dis} >
+            <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "blue"}}/>
+        </IconButton>)
+        setColor2(<IconButton>
+            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/>
+        </IconButton>)
+        setColor3(<IconButton>
+            <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
+        </IconButton>)
     };
     const handleAll = (event) =>
      {
-        store.closeCurrentList()
         store.loadAllPlaylists(1)
+        let dis = false
+        if(auth.isGuest){
+            dis = true
+        }
+        setColor1(<IconButton disabled = {dis} >
+            <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
+        </IconButton>)
+        setColor2(<IconButton>
+            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/>
+        </IconButton>)
+        setColor3(<IconButton>
+            <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
+        </IconButton>)
     };
     const handleUsers = (event) =>
      {
-        store.closeCurrentList()
         store.loadAllPlaylists(2)
+        let dis = false
+        if(auth.isGuest){
+            dis = true
+        }
+        setColor1(<IconButton disabled = {dis} >
+            <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
+        </IconButton>)
+        setColor2(<IconButton>
+            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/>
+        </IconButton>)
+        setColor3(<IconButton>
+            <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "blue"}}/>
+        </IconButton>)
     };
+    console.log("RENDER")
     const menuId = 'primary-search-account-menu';
     let dis = false
     if(auth.isGuest){
         dis = true
     }
-    if (auth.loggedIn){
+    const [color1, setColor1] = useState(<IconButton  disabled = {dis} >
+        <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "blue"}}/>
+    </IconButton>)
+    const [color2, setColor2] = useState(<IconButton>
+        <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/>
+    </IconButton>)
+    const [color3, setColor3] = useState(<IconButton>
+        <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
+    </IconButton>)
+    // if(auth.isGuest){
+    //     setColor1(<IconButton disabled = {dis} >
+    //         <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
+    //     </IconButton>)
+    //     setColor2(<IconButton>
+    //         <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/>
+    //     </IconButton>)
+    // }
+    if (auth.loggedIn &&  window.location.href != "http://localhost:3000/register" && window.location.href != "http://localhost:3000/login"){
         return <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" style = {{background: '#C0C0C0'}}>
             <Toolbar>
-                <IconButton disabled = {dis} >
-                    <HomeIcon onClick = {handleHome} sx = {{fontSize: "48px"}}/>
-                </IconButton>
-                <IconButton>
-                    <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px"}}/>
-                </IconButton>
-                <IconButton>
-                    <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px"}}/>
-                </IconButton>
+                {color1}
+                {color2}
+                {color3}
                 <Grid container spacing={3} wrap='nowrap'>
                     <Grid item xs={24}>
                         <TextField
