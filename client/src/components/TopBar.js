@@ -66,15 +66,14 @@ export default function TopBar() {
         if(auth.isGuest){
             dis = true
         }
-        setColor1(<IconButton disabled = {dis} >
+        setColor1(<Box sx={{width : "45%"}}> <IconButton  disabled = {dis} >
             <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "blue"}}/>
-        </IconButton>)
-        setColor2(<IconButton>
-            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/>
-        </IconButton>)
-        setColor3(<IconButton>
+        </IconButton> <IconButton>
+            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/> </IconButton> 
+            <IconButton>
             <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
-        </IconButton>)
+        </IconButton>
+        </Box>)
     };
     const handleAll = (event) =>
      {
@@ -83,15 +82,14 @@ export default function TopBar() {
         if(auth.isGuest){
             dis = true
         }
-        setColor1(<IconButton disabled = {dis} >
+        setColor1(<Box sx={{width : "45%"}}> <IconButton  disabled = {dis} >
             <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
-        </IconButton>)
-        setColor2(<IconButton>
-            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/>
-        </IconButton>)
-        setColor3(<IconButton>
+        </IconButton> <IconButton>
+            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/> </IconButton> 
+            <IconButton>
             <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
-        </IconButton>)
+        </IconButton>
+        </Box>)
     };
     const handleUsers = (event) =>
      {
@@ -100,46 +98,45 @@ export default function TopBar() {
         if(auth.isGuest){
             dis = true
         }
-        setColor1(<IconButton disabled = {dis} >
+        setColor1(<Box sx={{width : "45%"}}> <IconButton  disabled = {dis} >
             <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
-        </IconButton>)
-        setColor2(<IconButton>
-            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/>
-        </IconButton>)
-        setColor3(<IconButton>
+        </IconButton> <IconButton>
+            <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/> </IconButton> 
+            <IconButton>
             <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "blue"}}/>
-        </IconButton>)
+        </IconButton>
+        </Box>)
     };
-    console.log("RENDER")
     const menuId = 'primary-search-account-menu';
     let dis = false
     if(auth.isGuest){
+        console.log("WADAWD")
         dis = true
     }
-    const [color1, setColor1] = useState(<IconButton  disabled = {dis} >
+    const [color1, setColor1] = useState( <Box sx={{width : "45%"}}> <IconButton  disabled = {dis} >
         <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "blue"}}/>
-    </IconButton>)
-    const [color2, setColor2] = useState(<IconButton>
-        <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/>
-    </IconButton>)
-    const [color3, setColor3] = useState(<IconButton>
+    </IconButton> <IconButton>
+        <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "gray"}}/> </IconButton> 
+        <IconButton>
         <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
-    </IconButton>)
-    // if(auth.isGuest){
-    //     setColor1(<IconButton disabled = {dis} >
-    //         <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
-    //     </IconButton>)
-    //     setColor2(<IconButton>
-    //         <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/>
-    //     </IconButton>)
+    </IconButton>
+    </Box>)
+    // if(dis){
+    //     setColor1(<Box sx={{width : "45%"}}> <IconButton  disabled = {dis} >
+    //     <HomeIcon onClick = {handleHome}  sx = {{fontSize: "48px", color: "gray"}}/>
+    // </IconButton> <IconButton>
+    //     <GroupsIcon onClick = {handleAll} sx = {{fontSize: "48px", color: "blue"}}/> </IconButton> 
+    //     <IconButton>
+    //     <PersonIcon onClick = {handleUsers} sx = {{fontSize: "48px", color: "gray"}}/>
+    // </IconButton>
+    // </Box>)
+
     // }
     if (auth.loggedIn &&  window.location.href != "http://localhost:3000/register" && window.location.href != "http://localhost:3000/login"){
         return <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" style = {{background: '#C0C0C0'}}>
             <Toolbar>
                 {color1}
-                {color2}
-                {color3}
                 <Grid container spacing={3} wrap='nowrap'>
                     <Grid item xs={24}>
                         <TextField
