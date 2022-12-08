@@ -62,14 +62,17 @@ export default function TopBar() {
     }
     const handleHome = (event) =>
      {
+        store.closeCurrentList()
         store.loadIdNamePairs()
     };
     const handleAll = (event) =>
      {
+        store.closeCurrentList()
         store.loadAllPlaylists(1)
     };
     const handleUsers = (event) =>
      {
+        store.closeCurrentList()
         store.loadAllPlaylists(2)
     };
     const menuId = 'primary-search-account-menu';

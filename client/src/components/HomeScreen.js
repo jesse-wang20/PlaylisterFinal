@@ -107,12 +107,17 @@ const HomeScreen = () => {
                 sm={4}
                 md={6.5} sx={{top:"100px"}}>
                 
-                <div id="list-selector-list">
+                <Box sx = {{left: "0%", top: "15%",
+  width: "100%",
+  height: "75%",
+  display: "flex",
+  overflow: "hidden",
+  overflowY: "scroll"}}>
                 {
                     listCard
                 }
                 <MUIDeleteModal />
-                </div>
+                </Box>
             </Grid>
             <Grid item xs={12} sm={8} md={5.5} sx = {{backgroundColor: '#C0C0C0'}}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

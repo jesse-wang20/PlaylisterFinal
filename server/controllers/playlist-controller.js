@@ -21,11 +21,12 @@ createPlaylist = (req, res) => {
     if (!playlist) {
         return res.status(400).json({ success: false, error: err })
     }
-    Playlist.findOne({name : playlist.name}, (err,pp) =>{
-        if(err){
+    Playlist.findOne({name : playlist.name, userName: playlist.userName}, (err,pp) =>{
+        if(err || pp == null){
 
         }
         else{
+            console.log(pp)
             playlist.name = playlist.name + '(1)'   
         }
     })
@@ -275,7 +276,6 @@ updatePlaylist = async (req, res) => {
             error: 'You must provide a body to update',
         })
     }
-
     Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
         console.log("playlist found: " + JSON.stringify(playlist));
         if (err) {
@@ -284,8 +284,6 @@ updatePlaylist = async (req, res) => {
                 message: 'Playlist not found!',
             })
         }
-
-        // DOES THIS LIST BELONG TO THIS USER?
         async function asyncFindUser(list) {
             await User.findOne({ email: list.ownerEmail }, (err, user) => {
                 console.log("user._id: " + user._id);
@@ -322,6 +320,8 @@ updatePlaylist = async (req, res) => {
             });
         }
         asyncFindUser(playlist);
+        // DOES THIS LIST BELONG TO THIS USER?
+        
     })
 }
 module.exports = {

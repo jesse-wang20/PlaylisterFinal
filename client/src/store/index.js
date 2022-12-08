@@ -497,34 +497,64 @@ function GlobalStoreContextProvider(props) {
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
-        async function asyncChangeListName(id) {
-            let response = await api.getPlaylistById(id);
-            if (response.data.success) {
-                let playlist = response.data.playlist;
-                playlist.name = newName;
-                async function updateList(playlist) {
-                    response = await api.updatePlaylistById(playlist._id, playlist);
-                    if (response.data.success) {
-                        async function getListPairs(playlist) {
-                            response = await api.getPlaylistPairs();
-                            if (response.data.success) {
-                                let pairsArray = response.data.idNamePairs;
-                                storeReducer({
-                                    type: GlobalStoreActionType.CHANGE_LIST_NAME,
-                                    payload: {
-                                        idNamePairs: pairsArray,
-                                        playlist: playlist
-                                    }
-                                });
+        // async function bruh(id) {
+        //     let response = await api.getPlaylistById(id);
+        //     if (response.data.success) {
+        //         let playlist = response.data.playlist;
+        //         if(playlist.name != newName){
+        //             playlist.likes = playlist.likes + 1;
+        //             async function updateList(playlist) {
+        //                 response = await api.getPlaylistsChecker(newName, playlist.userName);
+        //                 if (response.data.success) {
+        //                     console.log("YES")
+        //                 }
+        //                 else{
+        //                     console.log("HERE")
+        //                     return true
+        //                 }
+        //             }
+        //             if(await updateList(playlist) == true){
+        //                 console.log("EHAWUIHD")
+        //                 return true
+        //             };
+        //         }
+        //     }
+        // }
+        // if(bruh(id) == true){
+        //     return true
+        // }
+        
+            console.log("NO NON ON")
+            async function asyncChangeListName(id) {
+                let response = await api.getPlaylistById(id);
+                if (response.data.success) {
+                    let playlist = response.data.playlist;
+                    playlist.name = newName;
+                    async function updateList(playlist) {
+                        response = await api.updatePlaylistById(playlist._id, playlist);
+                        if (response.data.success) {
+                            async function getListPairs(playlist) {
+                                response = await api.getPlaylistPairs();
+                                if (response.data.success) {
+                                    let pairsArray = response.data.idNamePairs;
+                                    storeReducer({
+                                        type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                        payload: {
+                                            idNamePairs: pairsArray,
+                                            playlist: playlist
+                                        }
+                                    });
+                                }
                             }
+                            getListPairs(playlist);
                         }
-                        getListPairs(playlist);
                     }
+                    updateList(playlist);
                 }
-                updateList(playlist);
             }
-        }
-        asyncChangeListName(id);
+            asyncChangeListName(id);
+        
+
     }
     store.addComment = function (written) {
         let user = store.currentUser
@@ -669,6 +699,7 @@ function GlobalStoreContextProvider(props) {
             }
         });
     }
+    
     store.handleView = function(id){
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
@@ -677,22 +708,29 @@ function GlobalStoreContextProvider(props) {
                 playlist.views = playlist.views + 1;
                 if(store.currentScreen == 0){
                     async function updateList(playlist) {
-                        response = await api.updatePlaylistById(playlist._id, playlist);
-                        if (response.data.success) {
-                            async function getListPairs(playlist) {
-                                response = await api.getPlaylistPairs();
-                                if (response.data.success) {
-                                    let pairsArray = response.data.idNamePairs;
-                                    storeReducer({
-                                        type: GlobalStoreActionType.VIEW,
-                                        payload: {
-                                            idNamePairs: pairsArray,
-                                            playlist: playlist
-                                        }
-                                    });
+                        try{
+                            response = await api.updatePlaylistById(playlist._id, playlist);
+                            console.log("RESPONSE", response)
+                            if (response.data.success) {
+                                async function getListPairs(playlist) {
+                                    response = await api.getPlaylistPairs();
+                                    if (response.data.success) {
+                                        let pairsArray = response.data.idNamePairs;
+                                        storeReducer({
+                                            type: GlobalStoreActionType.VIEW,
+                                            payload: {
+                                                idNamePairs: pairsArray,
+                                                playlist: playlist
+                                            }
+                                        });
+                                    }
                                 }
+                                getListPairs(playlist);
                             }
-                            getListPairs(playlist);
+                        }
+                        catch{
+                            console.log("ERROR")
+                            return true
                         }
                     }
                     updateList(playlist);
@@ -737,7 +775,6 @@ function GlobalStoreContextProvider(props) {
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
         let newListName = "Untitled " + store.newListCounter;
-        console.log("NEW LIST COUNTER", store.newListCounter)
         
         const response = await api.createPlaylist(newListName, [], auth.user.email, [], auth.user.username);
         if (response.status === 201) {
@@ -824,7 +861,7 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: {
                         pairsArray: pairsArray,
-                        currentUser: {val},
+                        currentUser: val,
                         number: num
                     }
                 });
@@ -847,7 +884,7 @@ function GlobalStoreContextProvider(props) {
                 type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                 payload: {
                     pairsArray: [],
-                    currentUser: {val},
+                    currentUser: val,
                     number: store.currentScreen
                 }
             });
@@ -868,7 +905,7 @@ function GlobalStoreContextProvider(props) {
                             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                             payload: {
                                 pairsArray: pairsArray,
-                                currentUser: {val},
+                                currentUser: val,
                                 number: store.currentScreen
                             }
                         });
@@ -894,7 +931,7 @@ function GlobalStoreContextProvider(props) {
                             type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                             payload: {
                                 pairsArray: pairsArray,
-                                currentUser: {val},
+                                currentUser: val,
                                 number: store.currentScreen
                             }
                         });
@@ -938,7 +975,7 @@ function GlobalStoreContextProvider(props) {
                         type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                         payload: {
                             pairsArray: pairsArray,
-                            currentUser: {val},
+                            currentUser: val,
                             number: store.currentScreen,
                             addTo: {crazy}
                         }

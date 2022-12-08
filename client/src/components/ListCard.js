@@ -69,6 +69,7 @@ function ListCard(props) {
         else{
             setOpen(!open);
             if(store.currentScreen && store.currentScreen != 0 && idNamePair.isPublished){
+                console.log("SCREEN IS", store.currentScreen)
                 store.handleView(idNamePair._id)
             }
             else{
@@ -238,7 +239,7 @@ Duplicate
       <Typography>
         &nbsp;&nbsp; {Dislikes} &nbsp;&nbsp;
       </Typography>
-      {open ? <ExpandLess onClick = {handleCloseClick} /> : <ExpandMore onClick={(event) => {
+      {store.currentList ? <ExpandLess onClick = {handleCloseClick} /> : <ExpandMore onClick={(event) => {
                 handleClick(event, idNamePair._id)
             }}/>}
     </ListItemButton>
